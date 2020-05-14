@@ -1,6 +1,8 @@
 /////////////////////////////////////////////////
 // GLOBAL APP CONTROLLER
-import Search from "./models/Search";
+import Search from './models/Search';
+import * as searchView from './views/searchView';
+import { elements } from './views/base';
 
 /* Global state of the app
 * -search object
@@ -10,16 +12,31 @@ import Search from "./models/Search";
 */
 const state = {};
 
-const constrolSearch = () => {
+const constrolSearch = async () => {
+    // 1) Get query from view
+    const query = searchView.getInput();
 
+    if (query) {
+        // 2) New searc object and add to state
+        state.search = new Search(query);
+
+        // 3) Prepare UI for results
+        searchView.clearInput();
+        searchView.clearResults();
+
+        // 4) Search for recipes
+        await state.search.getResults();
+
+        // 5) Render results on UI
+        searchView.renderResults(state.search.result);
+    }
 }
 
-document.querySelector('.search').addEventListener('submit', e =>{
+elements.searchForm.addEventListener('submit', e =>{
     e.preventDefault();
     constrolSearch();
-
 });
 
-const search = new Search('pizza');
+/* const search = new Search('pizza');
 console.log(search);
-search.getResults();
+search.getResults(); */
